@@ -13,11 +13,11 @@ from matplotlib import pyplot as plt
 
 
 def main():
-    learning_rate = 0.00003
-    epochs = 300
-    batch_size = 150
-    decay_r = (learning_rate / (epochs + epochs / 2))
-    images_n = 100000
+    learning_rate = 0.0001
+    epochs = 20
+    batch_size = 64
+    decay_r = 0 #(learning_rate / (epochs + epochs / 2))
+    images_n = 10000
 
     model = nb.build_model()
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_jpg"
@@ -26,9 +26,9 @@ def main():
     loss_func = "mse"
     model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate, decay=decay_r), loss=loss_func, metrics=['accuracy'])
     history = model.fit(images, images, validation_split=0.05, callbacks=[], batch_size=batch_size, epochs=epochs)
-    model.save("mamodel_keras_0")
+    model.save("128i_10k_64b_20e")
 
-    test_im = ir.read_directory(fp, limit=100, start=images_n)
+    test_im = ir.read_directory(fp, limit=200, start=images_n-50)
     test_im_disp = np.array(test_im)
     test_im = np.array(test_im) / 255
     test_pred = model.predict(test_im)
