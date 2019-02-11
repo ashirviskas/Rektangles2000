@@ -10,13 +10,14 @@ import ImageReader as ir
 import cv2
 import os
 from matplotlib import pyplot as plt
+import RecoderDisplaying as rd
 
 
-def main():
-    learning_rate = 0.0001
-    epochs = 20
+def train(modelname = "128i_10k_64b_20e"):
+    learning_rate = 0.01
+    epochs = 5
     batch_size = 64
-    decay_r = 0 #(learning_rate / (epochs + epochs / 2))
+    decay_r = 0  # (learning_rate / (epochs + epochs / 2))
     images_n = 10000
 
     model = nb.build_model()
@@ -24,17 +25,19 @@ def main():
     images = ir.read_directory(fp, images_n)
     images = np.array(images) / 255
     loss_func = "mse"
-    model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate, decay=decay_r), loss=loss_func, metrics=['accuracy'])
+    model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate, decay=decay_r), loss=loss_func,
+                  metrics=['accuracy'])
     history = model.fit(images, images, validation_split=0.05, callbacks=[], batch_size=batch_size, epochs=epochs)
-    model.save("128i_10k_64b_20e")
+    model.save(modelname)
 
-    test_im = ir.read_directory(fp, limit=200, start=images_n-50)
+    test_im = ir.read_directory(fp, limit=200, start=images_n - 50)
     test_im_disp = np.array(test_im)
     test_im = np.array(test_im) / 255
     test_pred = model.predict(test_im)
     test_pred = np.array(test_pred * 255, dtype=np.uint8)
-
+    rd.main(modelname)
     for i, d in enumerate(test_pred):
+        break
         fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2)
         c_d = cv2.cvtColor(d, cv2.COLOR_BGR2RGB)
         ax0.imshow(c_d, interpolation='nearest', aspect='auto')
@@ -44,14 +47,10 @@ def main():
         if i > 50:
             break
 
-    for i in range(5):
-        break
-        cv2.imshow('image', images[i])
-        k = cv2.waitKey(0)
-        if k == 27:  # wait for ESC key to exit
-            cv2.destroyAllWindows()
+
+def main():
+    train("128i_10k_64b_5e")
 
 
 if __name__ == "__main__":
-
     main()

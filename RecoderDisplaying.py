@@ -23,14 +23,14 @@ def fix_image_for_showing(img_):
     return surf
 
 
-def main():
+def main(modelname = "128i_10k_64b_20e"):
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_jpg"
     images_n = 500
     images = ir.read_directory(fp, images_n)
     images = np.array(images) / 255
 
-    model = load_model("128i_10k_64b_1e", custom_objects={'binary_activation':binary_activation})
+    model = load_model(modelname, custom_objects={'binary_activation':binary_activation})
     encoded_model = keras.models.Model(inputs = model.input, outputs=[model.get_layer("conv2d_7").get_output_at(0), model.output])
     images_recoded = encoded_model.predict(images)
     pygame.init()
@@ -42,7 +42,7 @@ def main():
         for i in range(8):
             for j in range(16):
                 img = images_recoded[0][m, :, :, i * 16 + j]
-                img = img.repeat(4,axis=0).repeat(4,axis=1)
+                img = img.repeat(1,axis=0).repeat(1,axis=1)
                 Z = 255 * img / img.max()
                 surf = pygame.surfarray.make_surface(Z)
                 screen.blit(surf, (i * 5 * 8 + 460, j*5 * 8))

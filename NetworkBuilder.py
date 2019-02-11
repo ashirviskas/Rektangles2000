@@ -22,8 +22,8 @@ def binary_activation(x):
     # zeros = tf.fill(tf.shape(x), 0.1 - 0.01 * tf.keras.backend.argmax(x, -1), dtype=x.dtype.base_dtype)
     zeros = tf.zeros(tf.shape(x), dtype=x.dtype.base_dtype)
     ones = tf.ones(tf.shape(x), dtype=x.dtype.base_dtype)
-    zeros = zeros + x * 1e-10
-    ones = ones + x * 1e-10
+    zeros = zeros + x * 1e-2
+    ones = ones + x * 1e-2
 
 
   # x = (x - 0.5) * 10e5
@@ -34,29 +34,33 @@ def binary_activation(x):
 
 def build_model():
 
-    input = Input(shape=(None, None, 3))
-    x = Conv2D(32, (4, 4), strides=(1, 1), activation='relu', padding='same')(input)
-    x = Conv2D(64, (4, 4), strides=(2, 2), activation='relu', padding='same')(x)
+    input = Input(shape=(128, 128, 3))
+    x = Conv2D(128, (8, 8), strides=(4, 4), activation='relu', padding='same')(input)
+    x = Conv2D(256, (4, 4), strides=(2, 2), activation='relu', padding='same')(x)
 
-    x = Conv2D(128, (4, 4), strides=(2, 2), activation='relu', padding='same')(x)
-    x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
-    x = Conv2D(128, (4, 4), strides=(2, 2), activation='relu', padding='same')(x)
-    x = Conv2D(128, (4, 4), strides=(1, 1), activation='sigmoid', padding='same')(x)
-    encoded = Conv2D(128, (4, 4), strides=(2, 2), activation=binary_activation, padding='same')(x)
+    # x = Conv2D(256, (4, 4), strides=(2, 2), activation='relu', padding='same')(x)
+    x = Conv2D(256, (4, 4), strides=(1, 1), activation='sigmoid', padding='same')(x)
+    encoded = Conv2D(128, (4, 4), strides=(1, 1), activation=binary_activation, padding='same')(x)
 
     x = UpSampling2D((2, 2))(encoded)
-    x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
-    x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
+    x = Conv2D(512, (4, 4), strides=(1, 1), activation='sigmoid', padding='same')(x)
+    # x = UpSampling2D((2, 2))(x)
+    x = Conv2D(512, (4, 4), strides=(1, 1), activation='sigmoid', padding='same')(x)
+    x = UpSampling2D((2, 2))(x)
+    x = Conv2D(256, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
+    # x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
     x = UpSampling2D((2, 2))(x)
     x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
-    x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
-    x = UpSampling2D((2, 2))(x)
-    x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
-    x = Conv2D(64, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
-    x = UpSampling2D((2, 2))(x)
-    x = Conv2D(32, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
+    # x = Conv2D(64, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
+    # x = UpSampling2D((2, 2))(x)
+    # x = Conv2D(32, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
     x = Conv2D(3, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
 
     model = keras.models.Model(input, x)
     print(model.summary())
     return model
+
+
+if __name__ == '__main__':
+    build_model()
+
