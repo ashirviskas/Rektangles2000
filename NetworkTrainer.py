@@ -13,11 +13,11 @@ from matplotlib import pyplot as plt
 import RecoderDisplaying as rd
 
 
-def train(modelname = "128i_10k_64b_10e"):
-    learning_rate = 0.001
-    epochs = 1
-    batch_size = 64
-    decay_r = 0  # (learning_rate / (epochs + epochs / 2))
+def train(modelname):
+    learning_rate = 0.0001
+    epochs = 10
+    batch_size = 100
+    decay_r = (learning_rate / (epochs))
     images_n = 10000
 
     model = nb.build_model()
@@ -49,7 +49,7 @@ def train(modelname = "128i_10k_64b_10e"):
 
 
 def main():
-    train("128i_10k_64b_5e")
+    train("128i_10k_64b_3e")
 
 
 if __name__ == "__main__":
