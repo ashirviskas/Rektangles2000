@@ -13,9 +13,9 @@ from matplotlib import pyplot as plt
 import RecoderDisplaying as rd
 
 
-def train(modelname = "128i_10k_64b_20e"):
-    learning_rate = 0.01
-    epochs = 5
+def train(modelname = "128i_10k_64b_10e"):
+    learning_rate = 0.001
+    epochs = 1
     batch_size = 64
     decay_r = 0  # (learning_rate / (epochs + epochs / 2))
     images_n = 10000

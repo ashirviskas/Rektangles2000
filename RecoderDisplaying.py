@@ -39,9 +39,9 @@ def main(modelname = "128i_10k_64b_20e"):
     size = (w, h)
     screen = pygame.display.set_mode(size)
     for m in range(images_n):
-        for i in range(8):
-            for j in range(16):
-                img = images_recoded[0][m, :, :, i * 16 + j]
+        for i in range(4):
+            for j in range(8):
+                img = images_recoded[0][m, :, :, i * 8 + j]
                 img = img.repeat(1,axis=0).repeat(1,axis=1)
                 Z = 255 * img / img.max()
                 surf = pygame.surfarray.make_surface(Z)
