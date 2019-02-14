@@ -23,11 +23,11 @@ def fix_image_for_showing(img_):
     return surf
 
 
-def main(modelname = "128i_10k_64b_5e"):
-    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+def main(modelname = "128i_10k_64b_300e"):# Todo: Move displaying to a separate function with auto/custom index parameters n stuff
+    # os.environ['CUDA_VISIBLE_DEVICES'] = ''
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_jpg"
     images_n = 500
-    images = ir.read_directory(fp, images_n)
+    images = ir.read_directory(fp, images_n, start=12000)
     images = np.array(images) / 255
 
     model = load_model(modelname, custom_objects={'binary_activation': binary_activation})
@@ -52,12 +52,11 @@ def main(modelname = "128i_10k_64b_5e"):
         img_orig = fix_image_for_showing(images[m, :, :, :])
         screen.blit(img_orig, (0, 0))
         weights_arr = images_recoded[0][m]
-        weights_arr.tofile("./encoded_images/" + str(m) + "lol")
+        weights_arr.tofile("./encoded_images/128_08_png/" + str(m) + "_imgdat")
 
 
         pygame.display.flip()
         time.sleep(1)
-
 
 
 if __name__ == "__main__":

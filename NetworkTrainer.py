@@ -15,13 +15,13 @@ import RecoderDisplaying as rd
 
 def train(modelname):
     learning_rate = 0.0001
-    epochs = 10
-    batch_size = 100
+    epochs = 100
+    batch_size = 64
     decay_r = (learning_rate / (epochs))
-    images_n = 10000
+    images_n = 15000
 
     model = nb.build_model()
-    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_jpg"
+    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
     images = ir.read_directory(fp, images_n)
     images = np.array(images) / 255
     loss_func = "mse"
@@ -49,7 +49,7 @@ def train(modelname):
 
 
 def main():
-    train("128i_10k_64b_3e")
+    train("128i_15k_64b_100e_png_z")
 
 
 if __name__ == "__main__":
