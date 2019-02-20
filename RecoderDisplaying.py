@@ -23,15 +23,17 @@ def fix_image_for_showing(img_):
     return surf
 
 
-def main(modelname = "128i_10k_64b_300e"):# Todo: Move displaying to a separate function with auto/custom index parameters n stuff
+def main(modelname = "64i_15k_50b_120e_png_z2"):# Todo: Move displaying to a separate function with auto/custom index parameters n stuff
     # os.environ['CUDA_VISIBLE_DEVICES'] = ''
-    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_jpg"
-    images_n = 500
-    images = ir.read_directory(fp, images_n, start=12000)
+    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
+    # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
+    images_n = 20
+    images = ir.read_directory(fp, images_n, start=0)
     images = np.array(images) / 255
 
     model = load_model(modelname, custom_objects={'binary_activation': binary_activation})
-    encoded_model = keras.models.Model(inputs = model.input, outputs=[model.get_layer("conv2d_6").get_output_at(0), model.output])
+    print(model.summary())
+    encoded_model = keras.models.Model(inputs = model.input, outputs=[model.get_layer("conv2d_11").get_output_at(0), model.output])
     images_recoded = encoded_model.predict(images)
     pygame.init()
     w = 1200
@@ -39,7 +41,7 @@ def main(modelname = "128i_10k_64b_300e"):# Todo: Move displaying to a separate 
     size = (w, h)
     screen = pygame.display.set_mode(size)
     for m in range(images_n):
-        for i in range(8):
+        for i in range(4):
             for j in range(16):
                 img = np.rot90(images_recoded[0][m, :, :, i * 8 + j], )
                 img = img.repeat(2,axis=0).repeat(2, axis=1)
@@ -52,7 +54,11 @@ def main(modelname = "128i_10k_64b_300e"):# Todo: Move displaying to a separate 
         img_orig = fix_image_for_showing(images[m, :, :, :])
         screen.blit(img_orig, (0, 0))
         weights_arr = images_recoded[0][m]
-        weights_arr.tofile("./encoded_images/128_08_png/" + str(m) + "_imgdat")
+        weights_arr = np.array(weights_arr, dtype=np.bool)
+        weights_arr_binary_string = np.packbits(weights_arr).tobytes()
+        # weights_arr.tofile("./encoded_images/64_16_16_png/" + str(m) + "_imgdat")
+        with open("./encoded_images/64_16_16_png_2/" + str(m) + "_imgdatp", 'wb') as datafile:
+            datafile.write(weights_arr_binary_string)
 
 
         pygame.display.flip()

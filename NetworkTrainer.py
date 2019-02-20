@@ -14,9 +14,15 @@ import RecoderDisplaying as rd
 
 
 def train(modelname):
+    # server = tf.train.Server.create_local_server()
+    # sess = tf.Session(server.target)
+    # K.set_session(sess)
+    # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    # K.set_floatx('float16')
+
     learning_rate = 0.0001
-    epochs = 100
-    batch_size = 64
+    epochs = 180
+    batch_size = 70
     decay_r = (learning_rate / (epochs))
     images_n = 15000
 
@@ -24,10 +30,15 @@ def train(modelname):
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
     images = ir.read_directory(fp, images_n)
     images = np.array(images) / 255
+    images = np.array(images, dtype=np.float16)
     loss_func = "mse"
-    model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate, decay=decay_r), loss=loss_func,
+    if True: # todo: implement multigpu setting
+        multi_model = keras.utils.multi_gpu_model(model, gpus=2, cpu_merge=True, cpu_relocation=False)
+    else:
+        multi_model = model
+    multi_model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate, decay=decay_r), loss=loss_func,
                   metrics=['accuracy'])
-    history = model.fit(images, images, validation_split=0.05, callbacks=[], batch_size=batch_size, epochs=epochs)
+    history = multi_model.fit(images, images, validation_split=0.05, callbacks=[], batch_size=batch_size, epochs=epochs)
     model.save(modelname)
 
     test_im = ir.read_directory(fp, limit=200, start=images_n - 50)
@@ -49,7 +60,7 @@ def train(modelname):
 
 
 def main():
-    train("128i_15k_64b_100e_png_z")
+    train("32i_15k_50b_120e_png_z2")
 
 
 if __name__ == "__main__":
