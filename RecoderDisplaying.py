@@ -23,31 +23,24 @@ def fix_image_for_showing(img_):
     return surf
 
 
-def main(modelname = "64i_15k_50b_120e_png_z2"):# Todo: Move displaying to a separate function with auto/custom index parameters n stuff
-    # os.environ['CUDA_VISIBLE_DEVICES'] = ''
-    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
-    # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
-    images_n = 20
-    images = ir.read_directory(fp, images_n, start=0)
-    images = np.array(images) / 255
+def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
 
-    model = load_model(modelname, custom_objects={'binary_activation': binary_activation})
-    print(model.summary())
-    encoded_model = keras.models.Model(inputs = model.input, outputs=[model.get_layer("conv2d_11").get_output_at(0), model.output])
+    encoded_model = keras.models.Model(inputs=model.input,
+                                       outputs=[model.get_layer(layer_of_activations).get_output_at(0), model.output])
     images_recoded = encoded_model.predict(images)
     pygame.init()
     w = 1200
     h = 650
     size = (w, h)
     screen = pygame.display.set_mode(size)
-    for m in range(images_n):
-        for i in range(4):
-            for j in range(16):
-                img = np.rot90(images_recoded[0][m, :, :, i * 8 + j], )
-                img = img.repeat(2,axis=0).repeat(2, axis=1)
+    for m, im in enumerate(images):
+        for i in range(layer_x):
+            for j in range(layer_y):
+                img = np.rot90(images_recoded[0][m, :, :, i * layer_y + j], )
+                img = img.repeat(2, axis=0).repeat(2, axis=1)
                 Z = 255 * img / img.max()
                 surf = pygame.surfarray.make_surface(Z)
-                screen.blit(surf, (i * 5 * 8 + 460, j*5 * 8))
+                screen.blit(surf, (i * 5 * 8 + 460, j * 5 * 8))
 
         img_recoded = fix_image_for_showing(images_recoded[1][m, :, :, :])
         screen.blit(img_recoded, (780, 0))
@@ -60,9 +53,22 @@ def main(modelname = "64i_15k_50b_120e_png_z2"):# Todo: Move displaying to a sep
         with open("./encoded_images/64_16_16_png_2/" + str(m) + "_imgdatp", 'wb') as datafile:
             datafile.write(weights_arr_binary_string)
 
-
         pygame.display.flip()
         time.sleep(1)
+
+
+def main(modelname = "64i_15k_50b_120e_png_z2"):
+    # os.environ['CUDA_VISIBLE_DEVICES'] = ''
+    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
+    # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
+    images_n = 20
+    images = ir.read_directory(fp, images_n, start=0)
+    images = np.array(images) / 255
+
+    model = load_model(modelname, custom_objects={'binary_activation': binary_activation})
+    print(model.summary())
+    visualise_model(images, model, "conv2d_11", 8, 8)
+
 
 
 if __name__ == "__main__":
