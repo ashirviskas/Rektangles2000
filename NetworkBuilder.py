@@ -42,7 +42,7 @@ def add_residual(inp, filters_n):
 
 
 def build_model():
-    input = Input(shape=(128, 128, 3))
+    input = Input(shape=(None, None, 3))
     x = Conv2D(256, (8, 8), strides=(4, 4), activation='relu', padding='same')(input)
     x = add_residual(x, 128)
     x = Conv2D(256, (4, 4), strides=(2, 2), activation='relu', padding='same')(x)

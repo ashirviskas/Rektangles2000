@@ -21,7 +21,7 @@ def train(modelname):
     # K.set_floatx('float16')
 
     learning_rate = 0.0001
-    epochs = 180
+    epochs = 300
     batch_size = 70
     decay_r = (learning_rate / (epochs))
     images_n = 15000
@@ -60,7 +60,7 @@ def train(modelname):
 
 
 def main():
-    train("32i_15k_50b_120e_png_z2")
+    train("64i_15k_50b_330e_png_z")
 
 
 if __name__ == "__main__":

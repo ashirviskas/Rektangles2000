@@ -57,7 +57,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         time.sleep(1)
 
 
-def main(modelname = "64i_15k_50b_120e_png_z2"):
+def main(modelname = "32i_15k_50b_120e_png_z3"):
     # os.environ['CUDA_VISIBLE_DEVICES'] = ''
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
@@ -67,7 +67,7 @@ def main(modelname = "64i_15k_50b_120e_png_z2"):
 
     model = load_model(modelname, custom_objects={'binary_activation': binary_activation})
     print(model.summary())
-    visualise_model(images, model, "conv2d_11", 8, 8)
+    visualise_model(images, model, "conv2d_14", 8, 16)
 
 
 
