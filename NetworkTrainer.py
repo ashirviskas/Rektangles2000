@@ -21,13 +21,14 @@ def train(modelname):
     # K.set_floatx('float16')
 
     learning_rate = 0.0001
-    epochs = 300
-    batch_size = 70
+    epochs = 5
+    batch_size = 20
     decay_r = (learning_rate / (epochs))
     images_n = 15000
 
-    model = nb.build_model()
-    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_128_png"
+    # model = nb.build_model()
+    model = keras.models.load_model("64i_15k_50b_330e_png_z", custom_objects={'binary_activation': nb.binary_activation})
+    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_256_jpg"
     images = ir.read_directory(fp, images_n)
     images = np.array(images) / 255
     images = np.array(images, dtype=np.float16)
@@ -60,7 +61,7 @@ def train(modelname):
 
 
 def main():
-    train("64i_15k_50b_330e_png_z")
+    train("64i_15k_50b_330e_mixed_training")
 
 
 if __name__ == "__main__":
