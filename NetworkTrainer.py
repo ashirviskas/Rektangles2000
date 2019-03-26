@@ -24,7 +24,7 @@ def train(modelname):
     epochs = 5
     batch_size = 20
     decay_r = (learning_rate / (epochs))
-    images_n = 15000
+    images_n = 5000
 
     # model = nb.build_model()
     model = keras.models.load_model("64i_15k_50b_330e_png_z", custom_objects={'binary_activation': nb.binary_activation})
@@ -61,7 +61,7 @@ def train(modelname):
 
 
 def main():
-    train("64i_15k_50b_330e_mixed_training")
+    train("64i_15k_random_images")
 
 
 if __name__ == "__main__":
