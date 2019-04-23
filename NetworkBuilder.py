@@ -71,7 +71,7 @@ def build_model():
     x = Conv2D(3, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
 
     model = keras.models.Model(input, x)
-    print(model.summary())
+    print(model.summary(200))
     return model
 
 

@@ -30,6 +30,10 @@ def read_directory(directory, limit=10000, start=0):
     return images
 
 
+def read_file(filepath):
+    img = cv2.imread(filepath, 3)
+    return img
+
 
 
 
