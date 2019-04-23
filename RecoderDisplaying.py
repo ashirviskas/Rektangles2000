@@ -112,7 +112,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
                 surf = pygame.surfarray.make_surface(Z)
                 screen.blit(surf, (i * 66 + 460, j * 66))
 
-        Z = 255 * images_recoded[1][m][0] / images_recoded[1][m][0].max()
+        Z = 255 * images_recoded[1][m] / images_recoded[1][m].max()
         Z = np.array(Z, dtype=np.uint8)
         cv2.imwrite(fp_test + "{:06d}".format(m) + ".jpg", Z)
         img_recoded = fix_image_for_showing(images_recoded[1][m, :, :, :])
@@ -136,7 +136,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         screen.fill((0, 0, 0))
 
 
-def main(modelname = "64i_15k_300_retrained_HSV_120more"):
+def main(modelname = "64i_15k_300_retrained_HSV_200more"):
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_256_jpg"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
