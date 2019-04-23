@@ -1,9 +1,9 @@
-from keras.layers import Activation
-from keras import backend as K
-from keras.utils.generic_utils import get_custom_objects
-import numpy as no
+# from keras.layers import Activation
+# from keras import backend as K
+# from keras.utils.generic_utils import get_custom_objects
+import numpy as np
 import keras
-import tensorflow as tf
+# import tensorflow as tf
 from keras.layers import *
 import NetworkBuilder as nb
 import ImageReader as ir
@@ -21,20 +21,20 @@ def train(modelname):
     # K.set_floatx('float16')
 
     learning_rate = 0.0001
-    epochs = 5
+    epochs = 80
     batch_size = 20
     decay_r = (learning_rate / (epochs))
-    images_n = 5000
+    images_n = 15000
 
     # model = nb.build_model()
-    model = keras.models.load_model("64i_15k_50b_330e_png_z", custom_objects={'binary_activation': nb.binary_activation})
+    model = keras.models.load_model("64i_15k_300_retrained_HSV_120more", custom_objects={'binary_activation': nb.binary_activation})
     fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_256_jpg"
     images = ir.read_directory(fp, images_n)
     images = np.array(images) / 255
     images = np.array(images, dtype=np.float16)
     loss_func = "mse"
-    if True: # todo: implement multigpu setting
-        multi_model = keras.utils.multi_gpu_model(model, gpus=2, cpu_merge=True, cpu_relocation=False)
+    if False: # todo: implement multigpu setting
+        multi_model = keras.utils.multi_gpu_model(model, gpus=1, cpu_merge=True, cpu_relocation=False)
     else:
         multi_model = model
     multi_model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate, decay=decay_r), loss=loss_func,
@@ -61,7 +61,7 @@ def train(modelname):
 
 
 def main():
-    train("64i_15k_random_images")
+    train("64i_15k_300_retrained_HSV_200more")
 
 
 if __name__ == "__main__":

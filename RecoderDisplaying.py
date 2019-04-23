@@ -30,7 +30,7 @@ def fix_image_for_showing(img_, limits=(460, 460)):
     Z = 255 * img / img.max()
     Z = np.array(Z, dtype=np.uint8)
     # c_d = cv2.cvtColor(Z, cv2.COLOR_BGR2RGB)
-    c_d = cv2.cvtColor(Z, cv2.COLOR_HSV2RGB)
+    c_d = cv2.cvtColor(Z, cv2.COLOR_BGR2RGB)
     surf = pygame.surfarray.make_surface(c_d)
     return surf
 
@@ -88,7 +88,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
     screen = pygame.display.set_mode(size)
     for m, im in enumerate(images):
         weights_shp = None
-        image_weights_arr = np.array(images_recoded[0][m][0, :, :, :], dtype=np.bool)
+        image_weights_arr = np.array(images_recoded[0][m, :, :, :], dtype=np.bool)
         image_weights_arr = np.swapaxes(image_weights_arr, 0, 2)
         # image_weights_arr = np.swapaxes(image_weights_arr, 0, 2)
         image_weights_arr = np.rot90(image_weights_arr, 3, axes=(1, 2))
@@ -97,16 +97,14 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         writer = png.Writer(image_weights_image.shape[1], image_weights_image.shape[0], bitdepth=1,
                             greyscale=True, compression=9, planes=1)
 
-        # file_write = open("./output_test/weights_" + str(m) + ".png", mode="wb")
-        # file_write_array = open("./output_test/write_array.png", mode="wb")
-        # file_write_packed = open("./output_test/write_packed.png", mode="wb")
-        image_object = png.from_array(image_weights_image, "L").save("./output_test/weights_" + str(m) + ".png")
+        image_weights_image = np.flip(image_weights_image, 1)
+        image_object = png.from_array(image_weights_image, "L").save("./output_test/weights_" + "{:06d}".format(m) + ".png")
         # writer.write(file_write, image_weights_image)
         # writer.write_array(file_write_array, image_weights_image)
         # writer.write_packed(file_write_packed, image_weights_image)
         for i in range(layer_x):
             for j in range(layer_y):
-                img = np.rot90(images_recoded[0][m][0, :, :, i * layer_y + j], )
+                img = np.rot90(images_recoded[0][m, :, :, i * layer_y + j], )
                 weights_shp = img.shape
                 img = fix_weight_size(img)
                 # img = img.repeat(2, axis=0).repeat(2, axis=1)
@@ -116,8 +114,8 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
 
         Z = 255 * images_recoded[1][m][0] / images_recoded[1][m][0].max()
         Z = np.array(Z, dtype=np.uint8)
-        cv2.imwrite(fp_test + str(m) + ".jpg", Z)
-        img_recoded = fix_image_for_showing(images_recoded[1][m][0, :, :, :])
+        cv2.imwrite(fp_test + "{:06d}".format(m) + ".jpg", Z)
+        img_recoded = fix_image_for_showing(images_recoded[1][m, :, :, :])
         screen.blit(img_recoded, (972, 0))
         img_orig = fix_image_for_showing(im)
         screen.blit(img_orig, (0, 0))
@@ -125,7 +123,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         # weights_arr = np.array(weights_arr, dtype=np.bool)
         weights_arr_binary_string = np.packbits(image_weights_arr).tobytes()
         # weights_arr.tofile("./encoded_images/64_16_16_png/" + str(m) + "_imgdat")
-        with open("./encoded_images/64_16_16_png_2/" + str(m) + "_imgdatp", 'wb') as datafile:
+        with open("./encoded_images/64_16_16_png_2/" + "{:06d}".format(m) + "_imgdatp", 'wb') as datafile:
             datafile.write(weights_arr_binary_string)
         myfont = pygame.font.SysFont('monospace', 30)
         img_txt = myfont.render("Image dimensions: " + str(im.shape[1]) + "x" + str(im.shape[0]), 1, (255, 255, 255))
@@ -138,10 +136,9 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         screen.fill((0, 0, 0))
 
 
-
-def main(modelname = "64i_15k_50b_330e_mixed_training"):
+def main(modelname = "64i_15k_300_retrained_HSV_120more"):
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
-    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_256_png"
+    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_256_jpg"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/cropped"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/random"
@@ -155,4 +152,4 @@ def main(modelname = "64i_15k_50b_330e_mixed_training"):
 
 
 if __name__ == "__main__":
-    main()
+    main("64i_15k_300_retrained_HSV_120more")
