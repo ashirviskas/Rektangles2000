@@ -3,6 +3,7 @@ import keras
 from keras.models import load_model
 import tensorflow as tf
 from keras.layers import *
+import NetworkBuilder as nb
 
 from keras import backend as K
 
@@ -19,20 +20,16 @@ class NetworkLoader:
         return encoder_model
 
     def get_decoder(self, layer_of_activations="conv2d_15"):
-        for i, l in enumerate(self.model.layers[0:19]):
-            # print(l.name)
-            # print(l.output_shape)
-            self.model.layers.pop(0)
-            # print(self.model.summary())
-        print(K.image_data_format())
-        print(self.model.summary)
-        newInput = Input(batch_shape=(None, None, None, 64))  # let us say this new InputLayer
-        newOutputs = self.model(newInput)
-        print(self.model.summary)
-        newModel = keras.models.Model(newInput, newOutputs)
-        print(newModel.summary(200))
-        # decoder_model = keras.models.Model(inputs=self.model.get_layer(layer_of_activations).input,
-        #                                    outputs=self.model.output)
 
-        return newModel
+        for i, l in enumerate(self.model.layers[0:19]):
+            self.model.layers.pop(0)
+            print(self.model.summary())
+        new_model = nb.build_decoder()
+        for i, l in enumerate(self.model.layers):
+            print(i, l.name, l.output_shape)
+            print(new_model.layers[i+1].name, new_model.layers[i+1].output_shape)
+            new_model.layers[i+1].set_weights(self.model.layers[i].get_weights())
+        print(self.model.summary)
+        print(new_model.summary(200))
+        return new_model
 

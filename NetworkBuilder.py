@@ -75,6 +75,26 @@ def build_model():
     return model
 
 
+def build_decoder():
+    input = Input(shape=(None, None, 64))
+    x = Conv2D(396, (1, 1), strides=(1, 1), activation='relu', padding='same')(input)
+    x = add_residual(x, 396)
+    x = add_residual(x, 396)
+    x = UpSampling2D((2, 2))(x)
+    x = Conv2D(256, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
+    x = add_residual(x, 128)
+    x = UpSampling2D((4, 4))(x)
+    x = Conv2D(128, (4, 4), strides=(1, 1), activation='relu', padding='same')(x)
+    x = Conv2D(128, (6, 6), strides=(1, 1), activation='relu', padding='same')(x)
+    x = add_residual(x, 128)
+    x = Conv2D(64, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
+    x = add_residual(x, 128)
+    # x = Conv2D(64, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
+    x = Conv2D(3, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
+    model = keras.models.Model(input, x)
+    print(model.summary(200))
+    return model
+
 if __name__ == '__main__':
     build_model()
 
