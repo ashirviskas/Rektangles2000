@@ -21,14 +21,19 @@ class NetworkLoader:
 
     def get_decoder(self, layer_of_activations="conv2d_15"):
 
+        # Looping through the old model and popping the encoder part + encoded layer
         for i, l in enumerate(self.model.layers[0:19]):
             self.model.layers.pop(0)
             print(self.model.summary())
+
+        # Building a clean model that is the exact same architecture as the decoder part of the autoencoder
         new_model = nb.build_decoder()
+
+        # Looping through both models and setting the weights on the new decoder
         for i, l in enumerate(self.model.layers):
             print(i, l.name, l.output_shape)
             print(new_model.layers[i+1].name, new_model.layers[i+1].output_shape)
-            new_model.layers[i+1].set_weights(self.model.layers[i].get_weights())
+            new_model.layers[i+1].set_weights(l.get_weights())
         print(self.model.summary)
         print(new_model.summary(200))
         return new_model
