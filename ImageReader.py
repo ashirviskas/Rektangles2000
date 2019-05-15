@@ -20,7 +20,10 @@ def read_directory(directory, limit=10000, start=0):
     logging.info(len(filepaths))
     for i, fp in enumerate(filepaths[start: start + limit]):
         img = cv2.imread(directory + "/" + fp, 3)
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        try:
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        except:
+            continue
         # cv2.imshow("img", img)
         # cv2.imshow("hsv", hsv)
         images.append(img)

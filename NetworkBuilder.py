@@ -71,7 +71,7 @@ def build_model():
     x = Conv2D(3, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
 
     model = keras.models.Model(input, x)
-    print(model.summary(200))
+    print(model.summary(120))
     return model
 
 
@@ -92,9 +92,9 @@ def build_decoder():
     # x = Conv2D(64, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
     x = Conv2D(3, (3, 3), strides=(1, 1), activation='relu', padding='same')(x)
     model = keras.models.Model(input, x)
-    print(model.summary(200))
+    print(model.summary(120))
     return model
 
 if __name__ == '__main__':
     build_model()
-
+    build_decoder()

@@ -9,6 +9,7 @@ import time
 import cv2
 import tensorflow as tf
 import png
+import sys
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -69,7 +70,7 @@ def generator_images(images):
 
 
 def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
-    fp_test = os.path.expanduser('~') + "/Bakk/Bakalauras/compression_testing/recodedImages/"
+    # fp_test = os.path.expanduser('~') + "/Bakk/Bakalauras/compression_testing/recodedImages/"
     encoded_model = keras.models.Model(inputs=model.input,
                                        outputs=[model.get_layer(layer_of_activations).get_output_at(0), model.output])
     images_recoded = list()
@@ -86,7 +87,34 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
     h = 650
     size = (w, h)
     screen = pygame.display.set_mode(size)
-    for m, im in enumerate(images):
+    py_index = 0
+    # for m, im in enumerate(images):
+    clock = pygame.time.Clock()
+    while True:
+        k_pressed = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        keys_pressed = pygame.key.get_pressed()
+
+        if keys_pressed[pygame.K_LEFT]:
+            py_index -= 1
+            k_pressed = True
+        if keys_pressed[pygame.K_RIGHT]:
+            py_index += 1
+            k_pressed = True
+        if py_index > len(images) - 1:
+            py_index = 0
+        if py_index < 0:
+            py_index = len(images) - 1
+        m = py_index
+        im = images[m]
+        clock.tick(60)
+        if not k_pressed:
+            continue
+        screen.fill((0, 0, 0))
         weights_shp = None
         image_weights_arr = np.array(images_recoded[0][m, :, :, :], dtype=np.bool)
         image_weights_arr = np.swapaxes(image_weights_arr, 0, 2)
@@ -98,7 +126,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
                             greyscale=True, compression=9, planes=1)
 
         image_weights_image = np.flip(image_weights_image, 1)
-        image_object = png.from_array(image_weights_image, "L").save("./output_test/weights_" + "{:06d}".format(m) + ".png")
+        # image_object = png.from_array(image_weights_image, "L").save("./output_test/weights_" + "{:06d}".format(m) + ".png")
         # writer.write(file_write, image_weights_image)
         # writer.write_array(file_write_array, image_weights_image)
         # writer.write_packed(file_write_packed, image_weights_image)
@@ -114,7 +142,7 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
 
         Z = 255 * images_recoded[1][m] / images_recoded[1][m].max()
         Z = np.array(Z, dtype=np.uint8)
-        cv2.imwrite(fp_test + "{:06d}".format(m) + ".jpg", Z)
+        # cv2.imwrite(fp_test + "{:06d}".format(m) + ".jpg", Z)
         img_recoded = fix_image_for_showing(images_recoded[1][m, :, :, :])
         screen.blit(img_recoded, (972, 0))
         img_orig = fix_image_for_showing(im)
@@ -123,8 +151,8 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         # weights_arr = np.array(weights_arr, dtype=np.bool)
         weights_arr_binary_string = np.packbits(image_weights_arr).tobytes()
         # weights_arr.tofile("./encoded_images/64_16_16_png/" + str(m) + "_imgdat")
-        with open("./encoded_images/64_16_16_png_2/" + "{:06d}".format(m) + "_imgdatp", 'wb') as datafile:
-            datafile.write(weights_arr_binary_string)
+        # with open("./encoded_images/64_16_16_png_2/" + "{:06d}".format(m) + "_imgdatp", 'wb') as datafile:
+        #     datafile.write(weights_arr_binary_string)
         myfont = pygame.font.SysFont('monospace', 30)
         img_txt = myfont.render("Image dimensions: " + str(im.shape[1]) + "x" + str(im.shape[0]), 1, (255, 255, 255))
         weight_txt = myfont.render("Compressed dimensions: " + str(weights_shp[1]) + "x" + str(weights_shp[0]) + "x64", 1, (255, 255, 255))
@@ -132,17 +160,17 @@ def visualise_model(images, model, layer_of_activations, layer_x=2, layer_y=5):
         screen.blit(weight_txt, (0, 590))
 
         pygame.display.flip()
-        time.sleep(0.1)
-        screen.fill((0, 0, 0))
+        time.sleep(0.06)
+
 
 
 def main(modelname = "64i_15k_300_retrained_HSV_200more"):
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
-    fp = os.path.expanduser('~') + "/Downloads/img_celeba/data_crop_256_jpg"
+    fp = os.path.expanduser('~') + "/Downloads/imama/"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/logos"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/cropped"
     # fp = os.path.expanduser('~') + "/Bakk/Bakalauras/personal_testing_images/random"
-    images_n = 99
+    images_n = 10
     images = ir.read_directory(fp, images_n, start=0)
     images = np.array(images) / 255
 
@@ -152,4 +180,4 @@ def main(modelname = "64i_15k_300_retrained_HSV_200more"):
 
 
 if __name__ == "__main__":
-    main("64i_15k_300_retrained_HSV_120more")
+    main("64i_15k_300_retrained_HSV_200more")
